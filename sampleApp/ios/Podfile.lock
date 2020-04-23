@@ -1,0 +1,16 @@
+PODS:
+  - HyperSnapSDK (2.4.4)
+
+DEPENDENCIES:
+  - HyperSnapSDK
+
+SPEC REPOS:
+  trunk:
+    - HyperSnapSDK
+
+SPEC CHECKSUMS:
+  HyperSnapSDK: e1dabf3011a0ce7aec2d2022a782eb8f45695a92
+
+PODFILE CHECKSUM: 17d0eb97548c90a2082eda1416963e177ff4280a
+
+COCOAPODS: 1.8.4
