@@ -24,23 +24,19 @@ HVDocConfig* getDocConfig(){
 }
 
 RCT_EXPORT_METHOD(setDocCaptureTitle:(NSString *)titleText){
-  [getDocConfig() setDocCaptureTitle:titleText];
+  [getDocConfig().textConfig setDocCaptureTitle:titleText];
 }
-
 RCT_EXPORT_METHOD(setDocCaptureDescription:(NSString *)description){
-  [getDocConfig() setDocCaptureDescription:description];
+  [getDocConfig().textConfig setDocCaptureDescription:description];
 }
-
 RCT_EXPORT_METHOD(setDocCaptureSubText:(NSString *)subText){
-  [getDocConfig() setDocCaptureSubText:subText];
+  [getDocConfig().textConfig setDocCaptureSubText:subText];
 }
-
 RCT_EXPORT_METHOD(setDocReviewTitle:(NSString *)docReviewTitle){
-  [getDocConfig() setDocReviewTitle:docReviewTitle];
+  [getDocConfig().textConfig setDocReviewTitle:docReviewTitle];
 }
-
 RCT_EXPORT_METHOD(setDocReviewDescription:(NSString *)docReviewDescription){
-  [getDocConfig() setDocReviewDescription:docReviewDescription];
+  [getDocConfig().textConfig setDocReviewDescription:docReviewDescription];
 }
 
 RCT_EXPORT_METHOD(setAspectRatio:(double)aspectRatio){
@@ -55,10 +51,10 @@ RCT_EXPORT_METHOD(setShouldAddPadding:(DocumentType)shouldAdd){
   [getDocConfig() setShouldAddPadding:shouldAdd];
 }
 
-RCT_EXPORT_METHOD(setShouldShowInstructionsPage:(BOOL)shouldShow){
-  [getDocConfig() setShouldShowInstructionsPage:shouldShow];
-  shouldShowInstructionPage = shouldShow;
-}
+// RCT_EXPORT_METHOD(setShouldShowInstructionsPage:(BOOL)shouldShow){
+//   [getDocConfig() setShouldShowInstructionsPage:shouldShow];
+//   shouldShowInstructionPage = shouldShow;
+// }
 RCT_EXPORT_METHOD(setShouldShowReviewScreen:(BOOL)shouldShow){
   [getDocConfig() setShouldShowReviewPage:shouldShow];
 }
