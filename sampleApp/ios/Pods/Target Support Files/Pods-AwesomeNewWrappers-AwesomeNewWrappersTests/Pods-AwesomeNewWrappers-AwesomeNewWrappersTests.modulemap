@@ -1,0 +1,6 @@
+module Pods_AwesomeNewWrappers_AwesomeNewWrappersTests {
+  umbrella header "Pods-AwesomeNewWrappers-AwesomeNewWrappersTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { PermissionsAndroid, Alert, TouchableHighlight, Modal,Platform,AppRegistry, View, Text, StyleSheet,Picker, TextInput, Button, NativeModules } from 'react-native';
+import { PermissionsAndroid, Alert, TouchableHighlight, Modal,Platform,AppRegistry, View, Text, StyleSheet,Picker, TextInput, Button, NativeModules, LogBox } from 'react-native';
 /*
 Wrappers for HyperSnapSDK have been written and bridged to be accessed in React Native Apps. The below import statement is used to import the required Native Modules.
 */
@@ -13,8 +13,8 @@ The bellow line is used to ignore certain warnings
 YellowBox.ignoreWarnings(['Module RCTImageLoader','Class RCTCxxModule']);
 
 //Please add the appId and appKey received from HyperVerge here.
-const appID ="";
-const appKey="";
+const appID = "";
+const appKey= "";
 
 
 var initSuccess=false;
@@ -45,7 +45,7 @@ class LandingPage extends Component //HomeScreen Class
           this.showAlert();
         }
         else{
-          RNHyperSnapSDK.initialize(appID,appKey,RNHyperSnapParams.RegionIndia,RNHyperSnapParams.ProductFaceID);
+          RNHyperSnapSDK.initialize(appID,appKey,RNHyperSnapParams.RegionAsiaPacific);
           initSuccess=true;
         }
     }
@@ -83,9 +83,12 @@ class LandingPage extends Component //HomeScreen Class
         else{
           result = "Error Received:"
         }
-        for (var key in dict) {
-          result = result + "\n"+ key + " : " + dict[key]
-        }
+        result = result + JSON.stringify(dict)
+        console.log(result)
+        // for (var key in dict) {
+        //   // result = result + "\n"+ key + " : " + dict[key].string
+        //   result = result + "\n"+ key + " : " + JSON.stringify(dict)
+        // }
         if(out=="doc"){
           this.setState({documentOutput:result});
         } else if(out == "qr"){
@@ -98,10 +101,9 @@ class LandingPage extends Component //HomeScreen Class
 
     hvDocs(){
       /* This method sets the document type, topText and bottomText and calls the Document capture activity*/
-       console.log("  HV Docs is fired");
+       console.log("HV Docs opened");
+       
 
-
-      // RNHVDocsCapture.setShouldShowInstructionPage(true);
 
       if(this.state.topText.length>1 || this.state.documentOutput.length>1){
         RNHVDocsCapture.setDocCaptureTitle(this.state.topText);
@@ -110,7 +112,11 @@ class LandingPage extends Component //HomeScreen Class
         RNHVDocsCapture.setDocCaptureDescription(this.state.bottomText);
       }
 
-      var closure = (error,result) => {
+
+      var closure = (error,result,headers) => {
+       
+        RNHyperSnapSDK.endUserSession();
+        // this.hvFace();
           if(error != null){
               this.setState({
                   topText: "  ",
@@ -123,8 +129,14 @@ class LandingPage extends Component //HomeScreen Class
                 topText: "  ",
                 bottomText: "  ",
               });
+              console.log("imageUri " + result["imageUri"])
+              console.log("action " + result["action"])
+              console.log("retakeMessage " + result["retakeMessage"])
+              console.log("apiResult " + result["apiResult"])
+              console.log("headers " + JSON.stringify(headers))
             this.printDictionary(result,"doc",true); //passing error to printDictonary to print the result
             docImageUri = result["imageUri"]
+
             //Uncomment next block to test OCR:
 
             // try{
@@ -132,19 +144,19 @@ class LandingPage extends Component //HomeScreen Class
             //   var headers = {};
             //   var closure = (error,result,headers) => {
             //     if (error != null){
-            //       console.log('error',error);
             //       this.printDictionary(error,"doc",true);
             //     } else {
-            //       console.log('result',result);
             //       this.printDictionary(result,"doc",true);
             //     }
+
+                
             //   }
-            //   RNHVNetworkHelper.makeOCRCall("https://apac.docs.hyperverge.co/v1.1/readNID",docImageUri,params,headers,closure)
+            //   RNHVNetworkHelper.makeOCRCall("https://ind-docs-staging.hyperverge.co/v2.0/readKYC",docImageUri,params,headers,closure)
             // } catch(error){
             //   console.log('error')
             // }
 
-            //Uncomment next block to test Face Match:
+            // Uncomment next block to test Face Match:
 
             // RNHVFaceCapture.start( (error,result,headers) => {
             //   if(error != null ){
@@ -153,16 +165,14 @@ class LandingPage extends Component //HomeScreen Class
             //   else{
             //     this.printDictionary(result,"face",true); //passing error to printDictonary to print the result
             //     faceImageUri = result["imageUri"]
-            //
+            
             //     try{
             //       var params = {};
             //       var headers = {};
             //       var closure = (error,result,headers) => {
             //         if (error != null){
-            //           console.log('error',error);
             //           this.printDictionary(error,"face",false);
             //         } else {
-            //           console.log('result',result);
             //           this.printDictionary(result,"face",true);
             //         }
             //       }
@@ -172,20 +182,44 @@ class LandingPage extends Component //HomeScreen Class
             //     }
             //   }
             // });
-
         }
 
       }
 
-      RNHVDocsCapture.setShouldShowReviewScreen(true);
+      RNHVDocsCapture.setShouldShowReviewScreen(true);      
       RNHVDocsCapture.setDocumentType(this.state.docType);
+      
+      var ocrParamString = `{
+        "forgeryCheck" : "yes",
+        "fraudCheck" : "yes",
+        "returnPlaceOfIssue" : "yes",
+        "dobForgeryCheck" : "yes",
+        "doeForgeryCheck" : "yes",
+        "emblemForgeryCheck" : "yes",
+        "fetchSummary" : "yes",
+        "dataLogging" : "yes",
+        "dobColonForgeryCheck" : "yes"
+        }`;
+
+        var ocrParamsObject = JSON.parse(ocrParamString);
+        var ocrHeaderObject = {}
+      
+      RNHyperSnapSDK.startUserSession("");
+      RNHVDocsCapture.setOCRAPIDetails("https://vnm-docs.hyperverge.co/v2/nationalID", RNHyperSnapParams.DocumentFront, ocrParamsObject, ocrHeaderObject);
+      
       RNHVDocsCapture.start(closure)
     }
 
     hvFace(){
       /* This method sets the liveness mode and calls the Face Capture activity */
 
+      console.log("HV Face opened");
+      RNHVFaceCapture.setShouldUseBackCamera(false);
+      RNHyperSnapSDK.startUserSession("");
+
       RNHVFaceCapture.start( (error,result,headers) => {
+
+        RNHyperSnapSDK.endUserSession();
           if(error != null ){
             this.printDictionary(error,"face",false); //passing error to printDictonary to print the error
           }
@@ -198,10 +232,8 @@ class LandingPage extends Component //HomeScreen Class
               var headers = {};
               var closure = (error,result,headers) => {
                 if (error != null){
-                  console.log('error',error);
                   this.printDictionary(error,"face",false);
                 } else {
-                  console.log('result',result);
                   this.printDictionary(result,"face",true);
                 }
               }
@@ -331,23 +363,14 @@ qrScan()
 }
 
 async function requestCameraPermission() {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-      {
-        'title': 'Camera permissions are required by HyperSnapSDK',
-        'message': 'HyperSnapSDK needs access to your camera ' +
-                   'so you can take awesome pictures.'
+
+    try {
+        const permission = PermissionsAndroid.PERMISSIONS.CAMERA;
+        await PermissionsAndroid.request(permission);
+        Promise.resolve();
+      } catch (error) {
+        Promise.reject(error);
       }
-    )
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log("Camera Permissions have been successfully set.")
-    } else {
-      console.log("Camera permission denied")
-    }
-  } catch (err) {
-    console.warn(err)
-  }
 }
 
 const styles = StyleSheet.create({
@@ -384,4 +407,4 @@ const styles = StyleSheet.create({
   },
   });
 
-  AppRegistry.registerComponent('HyperSnapDemoApp_React', () => LandingPage);
+  AppRegistry.registerComponent('AwesomeNewWrappers', () => LandingPage);

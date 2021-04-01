@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-AwesomeNewWrappers-AwesomeNewWrappersTests/Pods-AwesomeNewWrappers-AwesomeNewWrappersTests-resources.sh
+${PODS_ROOT}/HyperSnapSDK/HVResources.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle
