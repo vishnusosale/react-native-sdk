@@ -1,6 +1,8 @@
-package co.hyperverge.hypersnapdemoapp_react;
+package com.awesomenewwrappers;
 
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -12,23 +14,25 @@ import com.facebook.react.bridge.WritableMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Iterator;
+import java.util.Objects;
 
 import co.hyperverge.hypersnapsdk.activities.HVFaceActivity;
 import co.hyperverge.hypersnapsdk.listeners.FaceCaptureCompletionHandler;
-import co.hyperverge.hypersnapsdk.objects.HVDocConfig;
 import co.hyperverge.hypersnapsdk.objects.HVError;
 import co.hyperverge.hypersnapsdk.objects.HVFaceConfig;
+import co.hyperverge.hypersnapsdk.objects.HVResponse;
 
 
 public class RNHVFaceCapture extends ReactContextBaseJavaModule {
     public String liveness;
+    HVFaceConfig faceConfig;
+    boolean hasBeenCalled;
 
     public RNHVFaceCapture(ReactApplicationContext reactContext) {
         super(reactContext);
     }
-    HVFaceConfig faceConfig;
-    boolean hasBeenCalled;
+
+    @NonNull
     @Override
     public String getName() {
         return "RNHVFaceCapture";
@@ -40,7 +44,7 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
     }
 
     public HVFaceConfig getFaceConfig() {
-        if(this.faceConfig == null) {
+        if (this.faceConfig == null) {
             this.faceConfig = new HVFaceConfig();
         }
         return this.faceConfig;
@@ -59,14 +63,14 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setCustomUIStrings(String customStrings){
+    public void setCustomUIStrings(String customStrings) {
         try {
             JSONObject stringObj = new JSONObject();
-            if( customStrings == null && !customStrings.trim().isEmpty() )
+            if (customStrings == null && !customStrings.trim().isEmpty())
                 stringObj = new JSONObject(customStrings);
             getFaceConfig().setCustomUIStrings(stringObj);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -89,7 +93,7 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
             HVFaceConfig.LivenessMode livenessMode = HVFaceConfig.LivenessMode.valueOf(liveness);
             getFaceConfig().setLivenessMode(livenessMode);
         } catch (Exception exp) {
-            exp.printStackTrace();
+            Log.e(getName(), Objects.requireNonNull(exp.getMessage()));
         }
     }
 
@@ -116,7 +120,7 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setPadding(Number leftPadding, Number rightPadding, Number topPadding, Number bottomPadding) {
-        getFaceConfig().setPadding((float)  (leftPadding) , (float)rightPadding, (float)topPadding, (float)bottomPadding);
+        getFaceConfig().setPadding((float) (leftPadding), (float) rightPadding, (float) topPadding, (float) bottomPadding);
     }
 
     @ReactMethod
@@ -124,7 +128,7 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
         try {
             getFaceConfig().setLivenessAPIParameters(new JSONObject(params));
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -133,27 +137,36 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
         try {
             getFaceConfig().setLivenessAPIHeaders(new JSONObject(headers));
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
         }
     }
 
 
     @ReactMethod
-    public void start( final Callback resultCallback) {
+    public void start(final Callback resultCallback) {
         hasBeenCalled = false;
 
         HVFaceActivity.start(getCurrentActivity(), getFaceConfig(), new FaceCaptureCompletionHandler() {
             @Override
-            public void onResult(HVError error, JSONObject result, JSONObject headers) {
+            public void onResult(HVError error, HVResponse hvResponse) {
 
                 try {
+                    JSONObject result = hvResponse.getApiResult();
+                    JSONObject headers = hvResponse.getApiHeaders();
+
+                    String imageURI = hvResponse.getImageURI();
+                    String fullImageUri = hvResponse.getFullImageURI();
+                    String action = hvResponse.getAction();
+                    String retakeMessage = hvResponse.getRetakeMessage();
+
                     WritableMap errorObj = Arguments.createMap();
                     WritableMap resultsObj = Arguments.createMap();
                     WritableMap headersObj = Arguments.createMap();
+
                     if (error != null) {
                         errorObj.putInt("errorCode", error.getErrorCode());
                         errorObj.putString("errorMessage", error.getErrorMessage());
-                        if(!hasBeenCalled) {
+                        if (!hasBeenCalled) {
                             hasBeenCalled = true;
                             resultCallback.invoke(errorObj, null, null);
                         }
@@ -162,32 +175,41 @@ public class RNHVFaceCapture extends ReactContextBaseJavaModule {
                             resultsObj = null;
                             try {
                                 resultsObj = RNHVNetworkHelper.convertJsonToMap(result);
+                                resultsObj.putString("apiResult", result.toString());
+                                resultsObj.putString("imageUri", imageURI);
+                                if (fullImageUri != null && !fullImageUri.isEmpty()) {
+                                    resultsObj.putString("fullImageUri", fullImageUri);
+                                }
+                                if (retakeMessage != null && !retakeMessage.isEmpty()) {
+                                    resultsObj.putString("retakeMessage", retakeMessage);
+                                }
+                                if (action != null && !action.isEmpty()) {
+                                    resultsObj.putString("action", action);
+                                }
                             } catch (Exception e) {
-
+                                Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                             }
-                            resultsObj.putString("response", result.toString());
                         }
                         if (headers != null) {
                             headersObj = null;
                             try {
                                 headersObj = RNHVNetworkHelper.convertJsonToMap(headers);
+                                headersObj.putString("apiHeaders", headers.toString());
                             } catch (Exception e) {
-
+                                Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                             }
                         }
-                        if(!hasBeenCalled) {
+                        if (!hasBeenCalled) {
                             hasBeenCalled = true;
                             resultCallback.invoke(null, resultsObj, headersObj);
                         }
 
                     }
 
-            }catch(Exception e){
-
+                } catch (Exception e) {
+                    Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                }
             }
-        }});
-
+        });
     }
-
-
 }

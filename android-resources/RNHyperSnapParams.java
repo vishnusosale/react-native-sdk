@@ -1,12 +1,12 @@
-package co.hyperverge.hypersnapdemoapp_react;
+package com.awesomenewwrappers;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class RNHyperSnapParams extends ReactContextBaseJavaModule {
 
@@ -22,14 +22,14 @@ public class RNHyperSnapParams extends ReactContextBaseJavaModule {
     public static final String LivenessModeNONE = "LivenessMode.NONE";
     public static final String LivenessModeTEXTURELIVENESS = "LivenessMode.TEXTURELIVENESS";
     public static final String LivenessModeTEXTUREANDGESTURELIVENESS = "LivenessMode.TEXTUREANDGESTURELIVENESS";
-
-
-
+    public static final String DocumentFront = "HVDocConfig.DocumentSide.FRONT";
+    public static final String DocumentBack = "HVDocConfig.DocumentSide.BACK";
 
     public RNHyperSnapParams(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
+    @NonNull
     @Override
     public String getName() {
         return "RNHyperSnapParams";
@@ -37,19 +37,21 @@ public class RNHyperSnapParams extends ReactContextBaseJavaModule {
 
     @Override
     public Map<String, Object> getConstants() {
-        final Map<String,Object> constants = new HashMap<>();
-        constants.put("RegionIndia",RegionIndia);
-        constants.put("RegionAsiaPacific",RegionAsiaPacific);
-        constants.put("RegionUnitedStates",RegionUnitedStates);
-        constants.put("ProductFaceID",ProductFACEID);
-        constants.put("ProductIAM",ProductIAM);
-        constants.put("DocumentTypeCard",DocumentCARD);
-        constants.put("DocumentTypeA4",DocumentA4);
-        constants.put("DocumentTypePassport",DocumentPASSPORT);
-        constants.put("DocumentTypeOther",DocumentOTHER);
-        constants.put("LivenessModeNone",LivenessModeNONE);
-        constants.put("LivenessModeTextureLiveness",LivenessModeTEXTURELIVENESS);
-        constants.put("LivenessModeTextureAndGestureLiveness",LivenessModeTEXTUREANDGESTURELIVENESS);
+        final Map<String, Object> constants = new HashMap<>();
+        constants.put("RegionIndia", RegionIndia);
+        constants.put("RegionAsiaPacific", RegionAsiaPacific);
+        constants.put("RegionUnitedStates", RegionUnitedStates);
+        constants.put("ProductFaceID", ProductFACEID);
+        constants.put("ProductIAM", ProductIAM);
+        constants.put("DocumentTypeCard", DocumentCARD);
+        constants.put("DocumentTypeA4", DocumentA4);
+        constants.put("DocumentTypePassport", DocumentPASSPORT);
+        constants.put("DocumentTypeOther", DocumentOTHER);
+        constants.put("LivenessModeNone", LivenessModeNONE);
+        constants.put("LivenessModeTextureLiveness", LivenessModeTEXTURELIVENESS);
+        constants.put("LivenessModeTextureAndGestureLiveness", LivenessModeTEXTUREANDGESTURELIVENESS);
+        constants.put("DocumentFront", DocumentFront);
+        constants.put("DocumentBack", DocumentBack);
         return constants;
     }
 }

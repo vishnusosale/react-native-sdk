@@ -1,4 +1,6 @@
-package co.hyperverge.hypersnapdemoapp_react;
+package com.awesomenewwrappers;
+
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -11,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -20,11 +23,11 @@ import co.hyperverge.hypersnapsdk.objects.HVError;
 
 public class RNHVQRScanCapture extends ReactContextBaseJavaModule {
 
+    private boolean hasBeenCalled;
+
     public RNHVQRScanCapture(@Nonnull ReactApplicationContext reactContext) {
         super(reactContext);
     }
-
-    boolean hasBeenCalled;
 
     @Nonnull
     @Override
@@ -44,7 +47,7 @@ public class RNHVQRScanCapture extends ReactContextBaseJavaModule {
                     if (error != null) {
                         errorObj.putInt("errorCode", error.getErrorCode());
                         errorObj.putString("errorMessage", error.getErrorMessage());
-                        if(!hasBeenCalled) {
+                        if (!hasBeenCalled) {
                             hasBeenCalled = true;
                             resultCallback.invoke(errorObj, null);
                         }
@@ -60,20 +63,20 @@ public class RNHVQRScanCapture extends ReactContextBaseJavaModule {
                                     resultsObj.putString(key, result.get(key).toString());
                                 }
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                             }
                         }
                     }
-                    if(!hasBeenCalled) {
+                    if (!hasBeenCalled) {
                         hasBeenCalled = true;
                         resultCallback.invoke(null, resultsObj);
                     }
                     return;
 
-
-            }catch(Exception e){}
-
-
-        }});
+                } catch (Exception e) {
+                    Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                }
+            }
+        });
     }
 }

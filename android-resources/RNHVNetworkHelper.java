@@ -1,6 +1,5 @@
-package co.hyperverge.hypersnapdemoapp_react;
+package com.awesomenewwrappers;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -21,135 +20,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import co.hyperverge.hypersnapsdk.listeners.APICompletionCallback;
 import co.hyperverge.hypersnapsdk.network.HVNetworkHelper;
 import co.hyperverge.hypersnapsdk.objects.HVError;
-import co.hyperverge.hypersnapsdk.objects.HyperSnapParams;
+import co.hyperverge.hypersnapsdk.objects.HVResponse;
 
 public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
     public RNHVNetworkHelper(@Nonnull ReactApplicationContext reactContext) {
         super(reactContext);
     }
-
-    @Nonnull
-    @Override
-    public String getName() {
-        return "RNHVNetworkHelper";
-    }
-
-    @ReactMethod
-    public   void makeOCRCall( String endpoint, String documentUri, ReadableMap parameters, ReadableMap headers, final Callback resultCallback) {
-
-        APICompletionCallback completionCallback = new APICompletionCallback() {
-             @Override
-             public void onResult(HVError error, JSONObject result, JSONObject headers) {
-
-                 WritableMap errorObj = Arguments.createMap();
-                 WritableMap resultsObj = Arguments.createMap();
-                 WritableMap headersObj = Arguments.createMap();
-                 if (error != null) {
-
-                     errorObj.putInt("errorCode", error.getErrorCode());
-                     errorObj.putString("errorMessage", error.getErrorMessage());
-                     resultCallback.invoke(errorObj, null);
-                 } else {
-
-                     if (result != null) {
-                         resultsObj = null;
-                         try {
-                             resultsObj = convertJsonToMap(result);
-                         }catch(Exception e){
-                            e.printStackTrace();
-                         }
-                     }
-                     if (headers != null) {
-                         headersObj = null;
-                         try {
-                             headersObj = convertJsonToMap(headers);
-                         }catch(Exception e){
-                            e.printStackTrace();
-                         }
-                     }
-                     resultCallback.invoke(null, resultsObj, headersObj);
-
-                 }
-             }
-
-         };
-        try {
-            JSONObject params = new JSONObject();
-            if(parameters != null) {
-                params = convertMapToJson(parameters);
-            }
-
-            JSONObject headers2 = new JSONObject();
-            if(headers != null) {
-                headers2 = convertMapToJson(headers);
-            }
-            HVNetworkHelper.makeOCRCall(getCurrentActivity(), endpoint, documentUri, params, headers2, completionCallback);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    @ReactMethod
-    public void makeFaceMatchCall( String endpoint, String faceUri, String documentUri, ReadableMap parameters, ReadableMap  headers,  final Callback resultCallback) {
-        APICompletionCallback completionCallback = new APICompletionCallback() {
-            @Override
-            public void onResult(HVError error, JSONObject result, JSONObject headers) {
-
-                WritableMap errorObj = Arguments.createMap();
-                WritableMap resultsObj = Arguments.createMap();
-                WritableMap headersObj = Arguments.createMap();
-                if (error != null) {
-                    errorObj.putInt("errorCode", error.getErrorCode());
-                    errorObj.putString("errorMessage", error.getErrorMessage());
-                    resultCallback.invoke(errorObj, null);
-
-                } else {
-                    if (result != null) {
-                        resultsObj = null;
-                        try {
-                            resultsObj = convertJsonToMap(result);
-                        }catch(Exception e){
-
-                        }
-                    }
-                    if (headers != null) {
-                        headersObj = null;
-                        try {
-                            headersObj = convertJsonToMap(headers);
-                        }catch(Exception e){
-
-                        }
-                    }
-                    resultCallback.invoke(null, resultsObj, headersObj);
-
-                }
-            }
-
-        };
-        try {
-            JSONObject params = new JSONObject();
-            if(parameters != null) {
-                params = convertMapToJson(parameters);
-            }
-
-            JSONObject headers2 = new JSONObject();
-            if(headers != null) {
-                headers2 = convertMapToJson(headers);
-            }
-
-            HVNetworkHelper.makeFaceMatchCall(getCurrentActivity(), endpoint, faceUri, documentUri, params, headers2, completionCallback);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
     protected static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
         WritableMap map = new WritableNativeMap();
@@ -160,15 +43,15 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
             Object value = jsonObject.get(key);
             if (value instanceof JSONObject) {
                 map.putMap(key, convertJsonToMap((JSONObject) value));
-            } else if (value instanceof  JSONArray) {
+            } else if (value instanceof JSONArray) {
                 map.putArray(key, convertJsonToArray((JSONArray) value));
-            } else if (value instanceof  Boolean) {
+            } else if (value instanceof Boolean) {
                 map.putBoolean(key, (Boolean) value);
-            } else if (value instanceof  Integer) {
+            } else if (value instanceof Integer) {
                 map.putInt(key, (Integer) value);
-            } else if (value instanceof  Double) {
+            } else if (value instanceof Double) {
                 map.putDouble(key, (Double) value);
-            } else if (value instanceof String)  {
+            } else if (value instanceof String) {
                 map.putString(key, (String) value);
             } else {
                 map.putString(key, value.toString());
@@ -184,15 +67,15 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
             Object value = jsonArray.get(i);
             if (value instanceof JSONObject) {
                 array.pushMap(convertJsonToMap((JSONObject) value));
-            } else if (value instanceof  JSONArray) {
+            } else if (value instanceof JSONArray) {
                 array.pushArray(convertJsonToArray((JSONArray) value));
-            } else if (value instanceof  Boolean) {
+            } else if (value instanceof Boolean) {
                 array.pushBoolean((Boolean) value);
-            } else if (value instanceof  Integer) {
+            } else if (value instanceof Integer) {
                 array.pushInt((Integer) value);
-            } else if (value instanceof  Double) {
+            } else if (value instanceof Double) {
                 array.pushDouble((Double) value);
-            } else if (value instanceof String)  {
+            } else if (value instanceof String) {
                 array.pushString((String) value);
             } else {
                 array.pushString(value.toString());
@@ -254,5 +137,130 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
             }
         }
         return array;
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "RNHVNetworkHelper";
+    }
+
+    @ReactMethod
+    public void makeOCRCall(String endpoint, String documentUri, ReadableMap parameters, ReadableMap headers, final Callback resultCallback) {
+
+        APICompletionCallback completionCallback = new APICompletionCallback() {
+            @Override
+            public void onResult(HVError error, HVResponse hvResponse) {
+
+                JSONObject result = hvResponse.getApiResult();
+                String imageURI = hvResponse.getImageURI();
+                JSONObject headers = hvResponse.getApiHeaders();
+                String action = hvResponse.getAction();
+
+                WritableMap errorObj = Arguments.createMap();
+                WritableMap resultsObj = Arguments.createMap();
+                WritableMap headersObj = Arguments.createMap();
+                if (error != null) {
+
+                    errorObj.putInt("errorCode", error.getErrorCode());
+                    errorObj.putString("errorMessage", error.getErrorMessage());
+                    resultCallback.invoke(errorObj, null);
+                } else {
+
+                    if (result != null) {
+                        resultsObj = null;
+                        try {
+                            resultsObj = convertJsonToMap(result);
+                        } catch (Exception e) {
+                            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                    if (headers != null) {
+                        headersObj = null;
+                        try {
+                            headersObj = convertJsonToMap(headers);
+                        } catch (Exception e) {
+                            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                    resultCallback.invoke(null, resultsObj, headersObj);
+
+                }
+            }
+
+        };
+        try {
+            JSONObject params = new JSONObject();
+            if (parameters != null) {
+                params = convertMapToJson(parameters);
+            }
+
+            JSONObject headers2 = new JSONObject();
+            if (headers != null) {
+                headers2 = convertMapToJson(headers);
+            }
+            HVNetworkHelper.makeOCRCall(getCurrentActivity(), endpoint, documentUri, params, headers2, completionCallback);
+        } catch (Exception e) {
+            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+        }
+    }
+
+    @ReactMethod
+    public void makeFaceMatchCall(String endpoint, String faceUri, String documentUri, ReadableMap parameters, ReadableMap headers, final Callback resultCallback) {
+        APICompletionCallback completionCallback = new APICompletionCallback() {
+            @Override
+            public void onResult(HVError error, HVResponse hvResponse) {
+
+                JSONObject result = hvResponse.getApiResult();
+                String imageURI = hvResponse.getImageURI();
+                JSONObject headers = hvResponse.getApiHeaders();
+                String action = hvResponse.getAction();
+
+                WritableMap errorObj = Arguments.createMap();
+                WritableMap resultsObj = Arguments.createMap();
+                WritableMap headersObj = Arguments.createMap();
+                if (error != null) {
+                    errorObj.putInt("errorCode", error.getErrorCode());
+                    errorObj.putString("errorMessage", error.getErrorMessage());
+                    resultCallback.invoke(errorObj, null);
+
+                } else {
+                    if (result != null) {
+                        resultsObj = null;
+                        try {
+                            resultsObj = convertJsonToMap(result);
+                        } catch (Exception e) {
+                            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                    if (headers != null) {
+                        headersObj = null;
+                        try {
+                            headersObj = convertJsonToMap(headers);
+                        } catch (Exception e) {
+                            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                    resultCallback.invoke(null, resultsObj, headersObj);
+
+                }
+            }
+
+        };
+        try {
+            JSONObject params = new JSONObject();
+            if (parameters != null) {
+                params = convertMapToJson(parameters);
+            }
+
+            JSONObject headers2 = new JSONObject();
+            if (headers != null) {
+                headers2 = convertMapToJson(headers);
+            }
+
+            HVNetworkHelper.makeFaceMatchCall(getCurrentActivity(), endpoint, faceUri, documentUri, params, headers2, completionCallback);
+        } catch (JSONException e) {
+            Log.e(getName(), Objects.requireNonNull(e.getMessage()));
+        }
     }
 }

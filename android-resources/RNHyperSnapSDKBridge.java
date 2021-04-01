@@ -1,4 +1,4 @@
-package co.hyperverge.hypersnapdemoapp_react;
+package com.awesomenewwrappers;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
