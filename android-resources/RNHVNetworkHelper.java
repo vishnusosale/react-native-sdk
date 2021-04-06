@@ -153,13 +153,17 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
             public void onResult(HVError error, HVResponse hvResponse) {
 
                 JSONObject result = hvResponse.getApiResult();
-                String imageURI = hvResponse.getImageURI();
                 JSONObject headers = hvResponse.getApiHeaders();
+
+                String imageURI = hvResponse.getImageURI();
+                String fullImageUri = hvResponse.getFullImageURI();
                 String action = hvResponse.getAction();
+                String retakeMessage = hvResponse.getRetakeMessage();
 
                 WritableMap errorObj = Arguments.createMap();
                 WritableMap resultsObj = Arguments.createMap();
                 WritableMap headersObj = Arguments.createMap();
+
                 if (error != null) {
 
                     errorObj.putInt("errorCode", error.getErrorCode());
@@ -170,7 +174,18 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
                     if (result != null) {
                         resultsObj = null;
                         try {
-                            resultsObj = convertJsonToMap(result);
+                            resultsObj = RNHVNetworkHelper.convertJsonToMap(result);
+                            resultsObj.putString("apiResult", result.toString());
+                            resultsObj.putString("imageUri", imageURI);
+                            if (fullImageUri != null && !fullImageUri.isEmpty()) {
+                                resultsObj.putString("fullImageUri", fullImageUri);
+                            }
+                            if (retakeMessage != null && !retakeMessage.isEmpty()) {
+                                resultsObj.putString("retakeMessage", retakeMessage);
+                            }
+                            if (action != null && !action.isEmpty()) {
+                                resultsObj.putString("action", action);
+                            }
                         } catch (Exception e) {
                             Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                         }
@@ -178,12 +193,13 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
                     if (headers != null) {
                         headersObj = null;
                         try {
-                            headersObj = convertJsonToMap(headers);
+                            headersObj = RNHVNetworkHelper.convertJsonToMap(headers);
+                            resultsObj.putString("apiHeaders", headers.toString());
                         } catch (Exception e) {
                             Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                         }
                     }
-                    resultCallback.invoke(null, resultsObj, headersObj);
+                    resultCallback.invoke(null, resultsObj);
 
                 }
             }
@@ -212,13 +228,17 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
             public void onResult(HVError error, HVResponse hvResponse) {
 
                 JSONObject result = hvResponse.getApiResult();
-                String imageURI = hvResponse.getImageURI();
                 JSONObject headers = hvResponse.getApiHeaders();
+
+                String imageURI = hvResponse.getImageURI();
+                String fullImageUri = hvResponse.getFullImageURI();
                 String action = hvResponse.getAction();
+                String retakeMessage = hvResponse.getRetakeMessage();
 
                 WritableMap errorObj = Arguments.createMap();
                 WritableMap resultsObj = Arguments.createMap();
                 WritableMap headersObj = Arguments.createMap();
+
                 if (error != null) {
                     errorObj.putInt("errorCode", error.getErrorCode());
                     errorObj.putString("errorMessage", error.getErrorMessage());
@@ -228,7 +248,18 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
                     if (result != null) {
                         resultsObj = null;
                         try {
-                            resultsObj = convertJsonToMap(result);
+                            resultsObj = RNHVNetworkHelper.convertJsonToMap(result);
+                            resultsObj.putString("apiResult", result.toString());
+                            resultsObj.putString("imageUri", imageURI);
+                            if (fullImageUri != null && !fullImageUri.isEmpty()) {
+                                resultsObj.putString("fullImageUri", fullImageUri);
+                            }
+                            if (retakeMessage != null && !retakeMessage.isEmpty()) {
+                                resultsObj.putString("retakeMessage", retakeMessage);
+                            }
+                            if (action != null && !action.isEmpty()) {
+                                resultsObj.putString("action", action);
+                            }
                         } catch (Exception e) {
                             Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                         }
@@ -236,12 +267,13 @@ public class RNHVNetworkHelper extends ReactContextBaseJavaModule {
                     if (headers != null) {
                         headersObj = null;
                         try {
-                            headersObj = convertJsonToMap(headers);
+                            headersObj = RNHVNetworkHelper.convertJsonToMap(headers);
+                            resultsObj.putString("apiHeaders", headersObj.toString());
                         } catch (Exception e) {
                             Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                         }
                     }
-                    resultCallback.invoke(null, resultsObj, headersObj);
+                    resultCallback.invoke(null, resultsObj);
 
                 }
             }

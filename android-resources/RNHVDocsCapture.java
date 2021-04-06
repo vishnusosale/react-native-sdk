@@ -278,7 +278,7 @@ public class RNHVDocsCapture extends ReactContextBaseJavaModule {
                         errorObj.putString("errorMessage", error.getErrorMessage());
                         if (!hasBeenCalled) {
                             hasBeenCalled = true;
-                            resultCallback.invoke(errorObj, null, null);
+                            resultCallback.invoke(errorObj, null);
                         }
                     } else {
                         if (result != null) {
@@ -304,14 +304,14 @@ public class RNHVDocsCapture extends ReactContextBaseJavaModule {
                             headersObj = null;
                             try {
                                 headersObj = RNHVNetworkHelper.convertJsonToMap(headers);
-                                headersObj.putString("apiHeaders", headers.toString());
+                                resultsObj.putString("apiHeaders", headers.toString());
                             } catch (Exception e) {
                                 Log.e(getName(), Objects.requireNonNull(e.getMessage()));
                             }
                         }
                         if (!hasBeenCalled) {
                             hasBeenCalled = true;
-                            resultCallback.invoke(null, resultsObj, headersObj);
+                            resultCallback.invoke(null, resultsObj);
                         }
 
                     }
