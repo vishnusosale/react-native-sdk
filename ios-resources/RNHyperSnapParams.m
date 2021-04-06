@@ -2,9 +2,7 @@
 //  HyperSnapParams.m
 //  HyperSnapSDK
 //
-//  Created by Srinija on 27/06/18.
 //  Copyright © 2018 HyperVerge. All rights reserved.
-//
 
 #import "RNHyperSnapParams.h"
 
@@ -24,8 +22,10 @@ RCT_EXPORT_MODULE()
             @"DocumentTypeCard" : @(DocumentTypeCard),
             @"DocumentTypeA4" : @(DocumentTypeA4),
             @"DocumentTypePassport" : @(DocumentTypePassport),
-            @"DocumentTypeOther" : @(DocumentTypeOther)
-            };
+            @"DocumentTypeOther" : @(DocumentTypeOther),
+            @"DocumentFront" : @(DocumentSideFront),
+            @"DocumentBack" : @(DocumentSideBack)
+  };
 };
 
 
@@ -34,11 +34,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-  
+
 + (BOOL)requiresMainQueueSetup
-  {
-    return YES;
-  }
+{
+  return YES;
+}
 
 @end
 
@@ -58,16 +58,24 @@ RCT_ENUM_CONVERTER(Product, (@{ @"ProductFaceID" : @(ProductFaceID),
 
 @implementation RCTConvert(LivenessMode)
 RCT_ENUM_CONVERTER(LivenessMode, (@{ @"LivenessModeNone" : @(LivenessModeNone),
-                               @"LivenessModeTextureLiveness" : @(LivenessModeTextureLiveness),
-                               }),
+                                     @"LivenessModeTextureLiveness" : @(LivenessModeTextureLiveness),
+                                  }),
                    LivenessModeTextureLiveness, integerValue)
 @end
 
 @implementation RCTConvert(DocumentType)
 RCT_ENUM_CONVERTER(DocumentType, (@{ @"DocumentTypeCard" : @(DocumentTypeCard),
-                               @"DocumentTypeA4" : @(DocumentTypeA4),
-                               @"DocumentTypePassport" : @(DocumentTypePassport),
-                               @"DocumentTypeOther" : @(DocumentTypeOther),
-                               }),
+                                     @"DocumentTypeA4" : @(DocumentTypeA4),
+                                     @"DocumentTypePassport" : @(DocumentTypePassport),
+                                     @"DocumentTypeOther" : @(DocumentTypeOther),
+                                  }),
                    DocumentTypeCard, integerValue)
+@end
+
+@implementation RCTConvert(DocumentSide)
+RCT_ENUM_CONVERTER(DocumentSide, (@{ @"DocumentFront" : @(DocumentSideFront),
+                                     @"DocumentBack" : @(DocumentSideBack),
+                                  }),
+                   DocumentSideFront, integerValue)
+
 @end

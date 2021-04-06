@@ -2,9 +2,7 @@
 //  RNHVFaceCapture.m
 //  HyperSnapSDK
 //
-//  Created by Srinija on 27/06/18.
 //  Copyright © 2018 HyperVerge. All rights reserved.
-//
 
 #import "RNHVFaceCapture.h"
 #import "AppDelegate.h"
@@ -30,9 +28,9 @@ RCT_EXPORT_METHOD(setShouldShowInstructionPage:(BOOL)shouldShow){
   [getFaceConfig() setShouldShowInstructionsPage:shouldShow];
 }
 
-RCT_EXPORT_METHOD(setShouldReturnFullImageUri:(BOOL)shouldReturn){
-  [getFaceConfig() setShouldReturnFullImageUri:shouldReturn];
-}
+//RCT_EXPORT_METHOD(setShouldReturnFullImageUri:(BOOL)shouldReturn){
+//  [getFaceConfig() setShouldReturnFullImageUri:shouldReturn];
+//}
 
 RCT_EXPORT_METHOD(setLivenessAPIParameters:(NSDictionary<NSString *,id> * _Nullable)parameters){
   [getFaceConfig() setLivenessAPIParameters:parameters];
@@ -56,11 +54,11 @@ RCT_EXPORT_METHOD(setShouldShowCameraSwitchButton:(BOOL)shouldShow){
 
 // Assumes input like "#00FF00" (#RRGGBB).
 - (UIColor *)colorFromHexString:(NSString *)hexString {
-    unsigned rgbValue = 0;
-    NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+  unsigned rgbValue = 0;
+  NSScanner *scanner = [NSScanner scannerWithString:hexString];
+  [scanner setScanLocation:1]; // bypass '#' character
+  [scanner scanHexInt:&rgbValue];
+  return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
 RCT_EXPORT_METHOD(setFaceCaptureCircleSuccessColor:(NSString *)color){
@@ -69,7 +67,7 @@ RCT_EXPORT_METHOD(setFaceCaptureCircleSuccessColor:(NSString *)color){
 }
 
 RCT_EXPORT_METHOD(setFaceCaptureCircleFailureColor:(NSString *)color){
-    UIColor * uiColor = [self colorFromHexString:color];
+  UIColor * uiColor = [self colorFromHexString:color];
   [getFaceConfig() setFaceCaptureCircleFailureColor:uiColor];
 }
 
@@ -86,13 +84,13 @@ RCT_EXPORT_METHOD(setPadding:(float)left right:(float)right top:(float)top botto
 
 
 RCT_EXPORT_METHOD(start: (RCTResponseSenderBlock)completionHandler) {
-
+  
   HVFaceConfig * hvFaceConfig = getFaceConfig();
-
+  
   UIViewController *root = RCTPresentedViewController();
-
-
-  [HVFaceViewController start:root hvFaceConfig:hvFaceConfig completionHandler: ^( HVError* _Nullable error,NSDictionary<NSString *,id> * _Nullable result, NSDictionary<NSString *,id> * _Nullable headers, UIViewController* vcNew){
+  
+  
+  [HVFaceViewController start:root hvFaceConfig:hvFaceConfig completionHandler: ^( HVError* _Nullable error, HVResponse* _Nullable result, UIViewController* vcNew){
     
     if(error != nil){
       NSMutableDictionary *errorDict = [[NSMutableDictionary alloc] init];
@@ -102,27 +100,83 @@ RCT_EXPORT_METHOD(start: (RCTResponseSenderBlock)completionHandler) {
       [errorDict setValue: errorMessage forKey: @"errorMessage"];
       if (result == nil) {
         completionHandler(@[errorDict, [NSNull null]]);
-      }else{
-        completionHandler(@[errorDict, result]);
+      }else {
+
+        NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+        
+        if (result.apiResult != nil) {
+          NSDictionary<NSString *,id> *apiResult = result.apiResult;
+          [resultDict setValue:apiResult forKey: @"apiResult"];
+        }
+        
+        if (result.apiHeaders != nil) {
+          NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+          [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+        }
+        
+        if (result.imageUri != nil) {
+          NSString *imageUri = [NSString stringWithString:result.imageUri];
+          [resultDict setValue:imageUri forKey: @"imageUri"];
+        }
+        
+        if (result.fullImageUri != nil) {
+          NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+          [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+        }
+        
+        if (result.retakeMessage != nil) {
+          NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+          [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+        }
+        
+        if (result.action != nil) {
+          NSString *action = [NSString stringWithString:result.action];
+          [resultDict setValue:action forKey: @"action"];
+        }
+        
+        completionHandler(@[errorDict, resultDict]);
       }
     }else{
-      completionHandler(@[[NSNull null], result]);
+      NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+      
+      if (result.apiResult != nil) {
+        NSDictionary<NSString *,id> *apiResult = result.apiResult;
+        [resultDict setValue:apiResult forKey: @"apiResult"];
+      }
+      
+      if (result.apiHeaders != nil) {
+        NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+        [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+      }
+      
+      if (result.fullImageUri != nil) {
+        NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+        [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+      }
+      
+      if (result.retakeMessage != nil) {
+        NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+        [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+      }
+      
+      
+      if (result.action != nil) {
+        NSString *action = [NSString stringWithString:result.action];
+        [resultDict setValue:action forKey: @"action"];
+      }
+      
+      
+      completionHandler(@[[NSNull null], resultDict]);
     }
-
-    UIViewController* vcToDismiss = vcNew;
-
-    [vcToDismiss dismissViewControllerAnimated:false completion:nil];
-
+    
   }];
-
+  
 }
 
-  - (dispatch_queue_t)methodQueue
-  {
-    return dispatch_get_main_queue();
-  }
-
-
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 
 
 @end

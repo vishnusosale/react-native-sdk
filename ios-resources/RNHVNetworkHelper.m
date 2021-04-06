@@ -2,9 +2,7 @@
 //  RNHVNetworkHelper.m
 //  HyperSnapDemoApp_React
 //
-//  Created by Srinija on 25/12/19.
 //  Copyright © 2019 Facebook. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 #import "AppDelegate.h"
@@ -15,10 +13,9 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(makeOCRCall:(NSString*)endpoint docUri:(NSString*)docUri params:(NSDictionary<NSString *,id> * _Nullable)params headers:(NSDictionary<NSString *,id> * _Nullable)headers completionHandler:(RCTResponseSenderBlock)completionHandler){
-  
 
-  [HVNetworkHelper makeOCRCallWithEndpoint:endpoint documentUri:docUri parameters:params headers:headers completionHandler: ^( HVError* _Nullable error,NSDictionary<NSString *,id> * _Nullable result, NSDictionary<NSString *,id> * _Nullable headers){
-
+  [HVNetworkHelper makeOCRAPICallWithEndpoint:endpoint documentUri:docUri parameters:params headers:headers completionHandler: ^( HVError* _Nullable error, HVResponse * _Nullable result){
+    
     if(error != nil){
       NSMutableDictionary *errorDict = [[NSMutableDictionary alloc] init];
       NSNumber *errorCode = [NSNumber numberWithInteger:error.getErrorCode];
@@ -26,21 +23,89 @@ RCT_EXPORT_METHOD(makeOCRCall:(NSString*)endpoint docUri:(NSString*)docUri param
       [errorDict setValue: errorCode forKey: @"errorCode"];
       [errorDict setValue: errorMessage forKey: @"errorMessage"];
       if (result == nil) {
-        completionHandler(@[errorDict, [NSNull null], [NSNull null]]);
+        completionHandler(@[errorDict, [NSNull null]]);
       }else{
-        completionHandler(@[errorDict, result, [NSNull null]]);
+        
+        NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+        
+        if (result.apiResult != nil) {
+          NSDictionary<NSString *,id> *apiResult = result.apiResult;
+          [resultDict setValue:apiResult forKey: @"apiResult"];
+        }
+        
+        if (result.apiHeaders != nil) {
+          NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+          [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+        }
+        
+        if (result.imageUri != nil) {
+          NSString *imageUri = [NSString stringWithString:result.imageUri];
+          [resultDict setValue:imageUri forKey: @"imageUri"];
+        }
+        
+        
+        if (result.fullImageUri != nil) {
+          NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+          [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+        }
+        
+        if (result.retakeMessage != nil) {
+          NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+          [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+        }
+        
+        
+        if (result.action != nil) {
+          NSString *action = [NSString stringWithString:result.action];
+          [resultDict setValue:action forKey: @"action"];
+        }
+        
+        completionHandler(@[errorDict, resultDict]);
       }
     }else{
-      completionHandler(@[[NSNull null], result, [NSNull null]]);
+      NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+      
+      if (result.apiResult != nil) {
+        NSDictionary<NSString *,id> *apiResult = result.apiResult;
+        [resultDict setValue:apiResult forKey: @"apiResult"];
+      }
+      
+      if (result.apiHeaders != nil) {
+        NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+        [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+      }
+      
+      if (result.imageUri != nil) {
+        NSString *imageUri = [NSString stringWithString:result.imageUri];
+        [resultDict setValue:imageUri forKey: @"imageUri"];
+      }
+      
+      if (result.fullImageUri != nil) {
+        NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+        [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+      }
+      
+      if (result.retakeMessage != nil) {
+        NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+        [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+      }
+      
+      
+      if (result.action != nil) {
+        NSString *action = [NSString stringWithString:result.action];
+        [resultDict setValue:action forKey: @"action"];
+      }
+      
+      completionHandler(@[[NSNull null], resultDict]);
     }
-
+    
   }];
 }
 
 RCT_EXPORT_METHOD(makeFaceMatchCall:(NSString*)endpoint faceUri:(NSString*)faceUri docUri:(NSString*)docUri params:(NSDictionary<NSString *,id> * _Nullable)params headers:(NSDictionary<NSString *,id> * _Nullable)headers completionHandler:(RCTResponseSenderBlock)completionHandler){
-
-  [HVNetworkHelper makeFaceMatchCallWithEndpoint:endpoint faceUri:faceUri documentUri:docUri parameters:params headers:headers completionHandler: ^( HVError* _Nullable error,NSDictionary<NSString *,id> * _Nullable result, NSDictionary<NSString *,id> * _Nullable headers){
-
+  
+  [HVNetworkHelper makeFaceMatchCallWithFaceUri:faceUri documentUri:docUri parameters:params headers:headers completionHandler: ^( HVError* _Nullable error,HVResponse * _Nullable result){
+    
     if(error != nil){
       NSMutableDictionary *errorDict = [[NSMutableDictionary alloc] init];
       NSNumber *errorCode = [NSNumber numberWithInteger:error.getErrorCode];
@@ -50,17 +115,80 @@ RCT_EXPORT_METHOD(makeFaceMatchCall:(NSString*)endpoint faceUri:(NSString*)faceU
       if (result == nil) {
         completionHandler(@[errorDict, [NSNull null], [NSNull null]]);
       }else{
-        completionHandler(@[errorDict, result, [NSNull null]]);
+        NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+        
+        if (result.apiResult != nil) {
+          NSDictionary<NSString *,id> *apiResult = result.apiResult;
+          [resultDict setValue:apiResult forKey: @"apiResult"];
+        }
+        
+        if (result.apiHeaders != nil) {
+          NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+          [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+        }
+        
+        if (result.imageUri != nil) {
+          NSString *imageUri = [NSString stringWithString:result.imageUri];
+          [resultDict setValue:imageUri forKey: @"imageUri"];
+        }
+        
+        if (result.fullImageUri != nil) {
+          NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+          [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+        }
+        
+        if (result.retakeMessage != nil) {
+          NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+          [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+        }
+        
+        
+        if (result.action != nil) {
+          NSString *action = [NSString stringWithString:result.action];
+          [resultDict setValue:action forKey: @"action"];
+        }
+        
+        completionHandler(@[errorDict, resultDict]);
       }
     }else{
-      completionHandler(@[[NSNull null], result, [NSNull null]]);
+      NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+      
+      if (result.apiResult != nil) {
+        NSDictionary<NSString *,id> *apiResult = result.apiResult;
+        [resultDict setValue:apiResult forKey: @"apiResult"];
+      }
+      
+      if (result.apiHeaders != nil) {
+        NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+        [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+      }
+      
+      if (result.imageUri != nil) {
+        NSString *imageUri = [NSString stringWithString:result.imageUri];
+        [resultDict setValue:imageUri forKey: @"imageUri"];
+      }
+      
+      if (result.fullImageUri != nil) {
+        NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+        [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+      }
+      
+      if (result.retakeMessage != nil) {
+        NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+        [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+      }
+      
+      
+      if (result.action != nil) {
+        NSString *action = [NSString stringWithString:result.action];
+        [resultDict setValue:action forKey: @"action"];
+      }
+      
+      completionHandler(@[[NSNull null], resultDict]);
     }
-
+    
   }];
 }
-
-//RCT_EXPORT_METHOD()
-
 
 - (dispatch_queue_t)methodQueue
 {

@@ -2,9 +2,7 @@
 //  RNHVDocsCapture.m
 //  HyperSnapSDK
 //
-//  Created by Srinija on 27/06/18.
 //  Copyright © 2018 HyperVerge. All rights reserved.
-//
 
 #import "RNHVDocsCapture.h"
 #import "AppDelegate.h"
@@ -21,6 +19,11 @@ HVDocConfig* getDocConfig(){
     hvDocConfig = [[HVDocConfig alloc] init];
   }
   return hvDocConfig;
+}
+
+RCT_EXPORT_METHOD(setOCRAPIDetails:(NSString *)endpoint documentSide:(DocumentSide)documentSide
+                  params:(NSDictionary<NSString *,id> * _Nullable)params headers:(NSDictionary<NSString *,id> * _Nullable)headers) {
+  [getDocConfig() setOCRAPIDetails:endpoint documentSide:documentSide params:params headers:headers];
 }
 
 RCT_EXPORT_METHOD(setDocCaptureTitle:(NSString *)titleText){
@@ -51,10 +54,11 @@ RCT_EXPORT_METHOD(setShouldAddPadding:(DocumentType)shouldAdd){
   [getDocConfig() setShouldAddPadding:shouldAdd];
 }
 
-// RCT_EXPORT_METHOD(setShouldShowInstructionsPage:(BOOL)shouldShow){
+//RCT_EXPORT_METHOD(setShouldShowInstructionsPage:(BOOL)shouldShow){
 //   [getDocConfig() setShouldShowInstructionsPage:shouldShow];
 //   shouldShowInstructionPage = shouldShow;
-// }
+//}
+
 RCT_EXPORT_METHOD(setShouldShowReviewScreen:(BOOL)shouldShow){
   [getDocConfig() setShouldShowReviewPage:shouldShow];
 }
@@ -64,45 +68,100 @@ RCT_EXPORT_METHOD(start: (RCTResponseSenderBlock)completionHandler) {
   HVDocConfig * hvDocConfig = getDocConfig();
   
   UIViewController *root = RCTPresentedViewController();
-
   
-  [HVDocsViewController start:root hvDocConfig:hvDocConfig completionHandler:^(HVError* error,NSDictionary<NSString *,id> * _Nonnull result, UIViewController* vcNew){
+  
+  [HVDocsViewController start:root hvDocConfig:hvDocConfig completionHandler:^(HVError* error, HVResponse* _Nonnull result, UIViewController* vcNew){
+    
     if(error != nil){
       NSMutableDictionary *errorDict = [[NSMutableDictionary alloc] init];
       NSNumber *errorCode = [NSNumber numberWithInteger:error.getErrorCode];
       NSString *errorMessage = [NSString stringWithString:error.getErrorMessage];
-
       [errorDict setValue: errorCode forKey: @"errorCode"];
       [errorDict setValue: errorMessage forKey: @"errorMessage"];
       if (result == nil) {
         completionHandler(@[errorDict, [NSNull null]]);
       }else{
-        completionHandler(@[errorDict, result]);
+        
+        NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+        
+        if (result.apiResult != nil) {
+          NSDictionary<NSString *,id> *apiResult = result.apiResult;
+          [resultDict setValue:apiResult forKey: @"apiResult"];
+        }
+        
+        if (result.apiHeaders != nil) {
+          NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+          [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
+        }
+        
+        if (result.imageUri != nil) {
+          NSString *imageUri = [NSString stringWithString:result.imageUri];
+          [resultDict setValue:imageUri forKey: @"imageUri"];
+        }
+        
+        if (result.fullImageUri != nil) {
+          NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+          [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+        }
+        
+        if (result.retakeMessage != nil) {
+          NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+          [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+        }
+        
+        if (result.action != nil) {
+          NSString *action = [NSString stringWithString:result.action];
+          [resultDict setValue:action forKey: @"action"];
+        }
+        
+        completionHandler(@[errorDict, resultDict]);
       }
     }else{
-      completionHandler(@[[NSNull null], result]);
-    }
+      
+      NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+      
+      if (result.apiResult != nil) {
+        
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:result.apiResult options:NSJSONWritingPrettyPrinted error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
-    UIViewController* vcToDismiss = vcNew;
-    
-    if ([vcNew isKindOfClass:[HVDocsViewController class]]) {
-      if(shouldShowInstructionPage){
-        vcToDismiss = vcNew.presentingViewController.presentingViewController;
+        
+        NSDictionary<NSString *,id> *apiResult = result.apiResult;
+        
+        
+        [resultDict setValue:jsonString forKey: @"apiResult"];
       }
-    }else{
-      if(shouldShowInstructionPage){
-        vcToDismiss = vcNew.presentingViewController.presentingViewController.presentingViewController;
-      }else{
-          vcToDismiss = vcNew.presentingViewController.presentingViewController;
+      
+      if (result.apiHeaders != nil) {
+        NSDictionary<NSString *,id> *apiHeaders = result.apiHeaders;
+        [resultDict setValue:apiHeaders forKey: @"apiHeaders"];
       }
+      
+      if (result.imageUri != nil) {
+        NSString *imageUri = [NSString stringWithString:result.imageUri];
+        [resultDict setValue:imageUri forKey: @"imageUri"];
+      }
+      
+      if (result.fullImageUri != nil) {
+        NSString *fullImageUri = [NSString stringWithString:result.fullImageUri];
+        [resultDict setValue:fullImageUri forKey: @"fullImageUri"];
+      }
+      
+      if (result.retakeMessage != nil) {
+        NSString *retakeMessage = [NSString stringWithString:result.retakeMessage];
+        [resultDict setValue:retakeMessage forKey: @"retakeMessage"];
+      }
+      
+      
+      if (result.action != nil) {
+        NSString *action = [NSString stringWithString:result.action];
+        [resultDict setValue:action forKey: @"action"];
+      }
+      
+      completionHandler(@[[NSNull null], resultDict]);
     }
-
-    [vcToDismiss dismissViewControllerAnimated:false completion:nil];
-
   }];
-
-
-  
 }
 
 - (dispatch_queue_t)methodQueue
