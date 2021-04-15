@@ -28,9 +28,9 @@ RCT_EXPORT_METHOD(setShouldShowInstructionPage:(BOOL)shouldShow){
   [getFaceConfig() setShouldShowInstructionsPage:shouldShow];
 }
 
-//RCT_EXPORT_METHOD(setShouldReturnFullImageUri:(BOOL)shouldReturn){
-//  [getFaceConfig() setShouldReturnFullImageUri:shouldReturn];
-//}
+RCT_EXPORT_METHOD(setShouldReturnFullImageUri:(BOOL)shouldReturn){
+ [getFaceConfig() setShouldReturnFullImageUri:shouldReturn];
+}
 
 RCT_EXPORT_METHOD(setLivenessAPIParameters:(NSDictionary<NSString *,id> * _Nullable)parameters){
   [getFaceConfig() setLivenessAPIParameters:parameters];
